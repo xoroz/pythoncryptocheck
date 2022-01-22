@@ -1,4 +1,5 @@
-
+# Script to check a crypto value and Alert via Email
+# By Felipe Ferreira
 import requests
 import pandas as pd
 import smtplib
@@ -6,14 +7,14 @@ from dotenv import load_dotenv
 import os 
 
 btclowwarn = 35000
-email = 'fel.h2o@gmail.com'
 
+
+#Get sensitive info from .env local file
 load_dotenv()
-
-
-
 gmail_user = os.getenv('gmail_user')
 gmail_password = os.getenv('gmail_password')
+api_key = os.getenv('api_key')
+email = os.getenv('email')
 
 def sendEmail(subject,content):
  try: 
@@ -23,19 +24,19 @@ def sendEmail(subject,content):
     server_ssl.sendmail(gmail_user, email, f"Subject: {subject}\n{content}")
     # ...send emails
  except:
-    print ('Something went wrong sending email...')
-    
+    print ('ERROR - Something went wrong sending email...')
+    quit()
 
 def get_crypto_price(symbol):
-    api_key = 'pk_54cdad9a8f4b411680cddc40467dd04d'
     api_url = f'https://cloud.iexapis.com/stable/crypto/{symbol}/price?token={api_key}'
     raw = requests.get(api_url).json()
     price = raw['price']
     return float(price)
 
 btc = get_crypto_price('btcusd')
-print('Price of 1 Bitcoin: {} USD'.format(btc))
+msg = 'Price of 1 Bitcoin: {} USD'.format(btc)
+print(msg)
 
 if btc < btclowwarn:
   print("BTC is low")
-  sendEmail('Test Email', 'OK email works')
+  sendEmail('BTC is low', 'Bitcoin price is low ' )
